@@ -146,10 +146,12 @@ return {
       { "<leader>fr", function() require("spectre").open() end, desc = "Replace in files (Spectre)" },
     },
   },
+
   {
     "dsznajder/vscode-es7-javascript-react-snippets",
     run = "yarn install --frozen-lockfile && yarn compile",
   },
+
   {
     "max397574/better-escape.nvim",
     event = "InsertEnter",
@@ -172,6 +174,7 @@ return {
     lazy = true,
     event = "VeryLazy",
   },
+
   {
     "charludo/projectmgr.nvim",
     lazy = false, -- important!
@@ -185,7 +188,9 @@ return {
       }
     end,
   },
+
   { "nvim-lua/plenary.nvim", lazy = true },
+
   {
     "kdheepak/lazygit.nvim",
     lazy = false,
@@ -198,6 +203,7 @@ return {
       require("telescope").load_extension "lazygit"
     end,
   },
+
   -- rust plugins
   {
     "rust-lang/rust.vim",
@@ -206,6 +212,7 @@ return {
       vim.g.rustfmt_autosave = 1
     end,
   },
+
   {
     "simrat39/rust-tools.nvim",
     ft = "rust",
@@ -254,12 +261,14 @@ return {
       }
     end,
   },
+
   {
     "mfussenegger/nvim-dap",
     init = function()
       -- require("core.utils").load_mappings "dap"
     end,
   },
+
   {
     "saecki/crates.nvim",
     ft = { "rust", "toml" },
@@ -273,6 +282,7 @@ return {
       require("core.utils").load_mappings "crates"
     end,
   },
+
   {
     "RRethy/vim-illuminate",
     lazy = false,
@@ -290,12 +300,14 @@ return {
       }
     end,
   },
+
   {
     "folke/trouble.nvim",
     lazy = false,
     dependencies = { "nvim-tree/nvim-web-devicons" },
     keys = { { "<leader>tt", "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble Lsp screen" } },
   },
+
   {
     "karb94/neoscroll.nvim",
     lazy = false,
@@ -303,6 +315,7 @@ return {
       require("neoscroll").setup {}
     end,
   },
+
   {
     "vuki656/package-info.nvim",
     dependencies = { "MunifTanjim/nui.nvim" },
@@ -310,15 +323,17 @@ return {
     config = function()
       require("package-info").setup {
         hide_unstable_versions = true,
-        hide_up_to_date = true,
+        -- hide_up_to_date = true,
       }
     end,
   },
+
   {
     "stevearc/dressing.nvim",
     lazy = false,
     opts = {},
   },
+
   {
     "utilyre/barbecue.nvim",
     name = "barbecue",
@@ -332,6 +347,7 @@ return {
       -- configurations go here
     },
   },
+
   {
     "ellisonleao/glow.nvim",
     ft = { "markdown", "mdx", "md" },
@@ -344,6 +360,7 @@ return {
     cmd = "Glow",
     keys = { { "<leader>mm", "<cmd>Glow<cr>", desc = "Preview markdown" } },
   },
+
   {
     "roobert/tailwindcss-colorizer-cmp.nvim",
     lazy = false,
