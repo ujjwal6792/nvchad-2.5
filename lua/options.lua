@@ -3,7 +3,10 @@ require "nvchad.options"
 -- add yours here!
 
 local o = vim.o
-o.cursorlineopt ='both' -- to enable cursorline!
+local opt = vim.opt
+local g = vim.g
+
+o.cursorlineopt = "both" -- to enable cursorline!
 
 o.expandtab = true
 o.autoindent = true
@@ -21,3 +24,25 @@ o.mouse = "a"
 o.number = true
 o.numberwidth = 2
 o.ruler = true
+opt.clipboard = "unnamedplus"
+-- disable nvim intro
+opt.shortmess:append "sI"
+
+opt.signcolumn = "yes"
+opt.splitbelow = true
+opt.splitright = true
+opt.termguicolors = true
+opt.timeoutlen = 400
+opt.undofile = true
+opt.swapfile = false
+-- interval for writing swap file to disk, also used by gitsigns
+opt.updatetime = 150
+
+opt.iskeyword:append "-" -- makes neovim read - as part of the word
+-- go to previous/next line with h,l,left arrow and right arrow
+-- when cursor reaches end/beginning of line
+opt.whichwrap:append "<>[]hl"
+opt.backspace = "indent,eol,start"
+
+g.mapleader = " "
+g.skip_ts_context_commentstring_module = true
