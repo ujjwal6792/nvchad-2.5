@@ -1,11 +1,20 @@
 require "nvchad.mappings"
 
 -- add yours here
-
+local g = vim.g
+local api = vim.api
 local map = vim.keymap.set
 
+local function opts_to_id(id)
+  for _, opts in pairs(g.nvchad_terms) do
+    if opts.id == id then
+      return opts
+    end
+  end
+end
+
 map("n", ";", ":", { desc = "CMD enter command mode" })
-map("i", "jk", "<ESC>")
+-- map("i", "jk", "<ESC>")
 
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
 
@@ -27,17 +36,46 @@ end, { desc = "Terminal New vertical window" })
 
 -- toggleable
 map({ "n", "t" }, "<A-v>", function()
-  vim.cmd "NvimTreeClose"
+  if g.nvchad_terms then
+    for _, opts in pairs(g.nvchad_terms) do
+      if opts.id == "htoggleTerm" then
+        local x = opts_to_id(opts.id)
+        if x or api.nvim_buf_is_valid(x.buf) then
+          local buf = vim.fn.getbufinfo(x.buf)[1]
+          if buf then
+            if buf.hidden ~= 1 then
+              api.nvim_win_close(x.win, true)
+            end
+          end
+        end
+      end
+    end
+  end
+  vim.cmd "wincmd l"
   require("nvchad.term").toggle { pos = "vsp", id = "vtoggleTerm", size = 0.4 }
 end, { desc = "Terminal Toggleable vertical term" })
 
 map({ "n", "t" }, "<A-h>", function()
-  vim.cmd "NvimTreeClose"
+  if g.nvchad_terms then
+    for _, opts in pairs(g.nvchad_terms) do
+      if opts.id == "vtoggleTerm" then
+        local x = opts_to_id(opts.id)
+        if x or api.nvim_buf_is_valid(x.buf) then
+          local buf = vim.fn.getbufinfo(x.buf)[1]
+          if buf then
+            if buf.hidden ~= 1 then
+              api.nvim_win_close(x.win, true)
+            end
+          end
+        end
+      end
+    end
+  end
+  vim.cmd "wincmd l"
   require("nvchad.term").toggle { pos = "sp", id = "htoggleTerm", size = 0.4 }
 end, { desc = "Terminal New horizontal term" })
 
 map({ "n", "t" }, "<A-i>", function()
-  vim.cmd "NvimTreeClose"
   require("nvchad.term").toggle { pos = "float", id = "floatTerm" }
 end, { desc = "Terminal Toggle Floating term" })
 
