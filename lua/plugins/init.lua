@@ -45,6 +45,8 @@ return {
         -- c/cpp stuff
         "clangd",
         "clang-format",
+        -- markdown
+        "marksman",
       },
     },
   },
