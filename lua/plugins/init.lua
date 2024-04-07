@@ -37,6 +37,7 @@ return {
         "css-lsp",
         "eslint-lsp",
         "eslint_d",
+        "prismals",
         -- rust stuff
         "rust-analyzer",
         -- go stuff
@@ -70,6 +71,7 @@ return {
         "javascript",
         "typescript",
         "tsx",
+        "prisma",
         "go",
         -- "gofumpt",
         "c",

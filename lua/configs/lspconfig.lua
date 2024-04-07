@@ -1,4 +1,3 @@
-
 local on_attach = require("nvchad.configs.lspconfig").on_attach
 -- local on_init = require("nvchad.configs.lspconfig").on_init
 local capabilities = require("nvchad.configs.lspconfig").capabilities
@@ -54,6 +53,16 @@ lspconfig.astro.setup {
     capabilities = capabilities,
     typescript = {
       serverPath = vim.fs.normalize "~/.nvm/versions/node/v19.9.0/lib/node_modules/typescript/lib/tsserverlibrary.js",
+    },
+  },
+}
+
+lspconfig.prismals.setup {
+  -- Adjust these paths based on your installation
+  cmd = { "prisma-language-server", "--stdio" },
+  settings = {
+    prisma = {
+      enable = true,
     },
   },
 }
