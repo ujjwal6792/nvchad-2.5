@@ -41,6 +41,14 @@ lspconfig.marksman.setup {
   filetypes = { "markdown", "markdown.mdx", "markdown.md" },
   cmd = { "marksman", "server" },
 }
+
+require("lspconfig").svelte.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  filetypes = { "svelte" },
+  cmd = { "svelteserver", "--stdio" },
+}
+
 lspconfig.tailwindcss.setup {
   on_attach = on_attach,
   capabilities = capabilities,

@@ -38,6 +38,7 @@ return {
         "eslint-lsp",
         "eslint_d",
         "prismals",
+        "svelte",
         -- rust stuff
         "rust-analyzer",
         -- go stuff
