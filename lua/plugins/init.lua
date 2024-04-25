@@ -25,6 +25,7 @@ return {
         "stylua",
 
         -- web dev stuff
+        "jq",
         "css-lsp",
         "html-lsp",
         "typescript-language-server",
