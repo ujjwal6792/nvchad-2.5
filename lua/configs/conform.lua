@@ -6,6 +6,7 @@ local options = {
     javascript = { "prettierd" },
     typescript = { "prettierd" },
     json = { { "jq", "prettierd" } },
+    markdown = { "prettierd" },
   },
 
   format_on_save = {
