@@ -7,8 +7,8 @@ local M = {}
 M.ui = { -- hl = highlights
   hl_add = {},
   hl_override = {
-    Comment = { italic = true },
-    ["@comment"] = { italic = true },
+    Comment = { italic = true, fg = "light_grey", bold = true },
+    ["@comment"] = { italic = true, fg = "light_grey", bold = true },
   },
   theme_toggle = { "catppuccin" },
   theme = "catppuccin", -- default theme
