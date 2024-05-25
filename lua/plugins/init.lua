@@ -85,13 +85,13 @@ return {
         enable = true,
         disable = {},
       },
-      autotag = {
-        enable = true,
-        enable_rename = true,
-        enable_close = true,
-        enable_close_on_slash = true,
-        close_on_exit = true,
-      },
+      -- autotag = {
+      --   enable = true,
+      --   enable_rename = true,
+      --   enable_close = true,
+      --   enable_close_on_slash = true,
+      --   close_on_exit = true,
+      -- },
       indent = {
         enable = true,
         -- disable = {
@@ -171,10 +171,12 @@ return {
     dependencies = "nvim-treesitter/nvim-treesitter",
     config = function()
       require("nvim-ts-autotag").setup {
-        enable = true,
-        enable_rename = true,
-        enable_close = true,
-        enable_close_on_slash = false,
+        opts = {
+          enable = true,
+          enable_rename = true,
+          enable_close = true,
+          enable_close_on_slash = true,
+        },
       }
     end,
     lazy = true,
