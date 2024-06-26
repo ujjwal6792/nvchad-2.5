@@ -26,9 +26,26 @@ vim.diagnostic.config {
   underline = true,
   update_in_insert = true,
   float = {
-    source = "always", -- Or "if_many"
+    source = true, -- Or "if_many"
   },
 }
+
+-- svelte lsp + neovim 0.9 issue fix
+local on_attach_svelte = function(client)
+  if client.name == "svelte" then
+    vim.api.nvim_create_autocmd("BufWritePost", {
+      pattern = { "*.js", "*.ts" },
+      group = vim.api.nvim_create_augroup("svelte_ondidchangetsorjsfile", { clear = true }),
+      callback = function(ctx)
+        -- Here use ctx.match instead of ctx.file
+        client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
+      end,
+    })
+  end
+
+  -- attach keymaps if needed
+end
+--
 
 lspconfig.tsserver.setup {
   on_attach = on_attach,
@@ -43,7 +60,7 @@ lspconfig.marksman.setup {
 }
 
 require("lspconfig").svelte.setup {
-  on_attach = on_attach,
+  on_attach = on_attach_svelte,
   capabilities = capabilities,
   filetypes = { "svelte" },
   cmd = { "svelteserver", "--stdio" },
