@@ -69,9 +69,9 @@ require("lspconfig").svelte.setup {
 lspconfig.tailwindcss.setup {
   on_attach = on_attach,
   capabilities = capabilities,
-  filetypes = {
-    "astro, astro-markdown, gohtml, gohtmltmpl, html, html-eex, markdown, mdx, css, less, postcss, sass, scss, stylus, javascript, javascriptreact, typescript, typescriptreact, vue, svelte",
-  },
+  -- filetypes = {
+  --   "astro, astro-markdown, gohtml, gohtmltmpl, html, html-eex, markdown, mdx, css, less, postcss, sass, scss, stylus, javascript, javascriptreact, typescript, typescriptreact, vue, svelte",
+  -- },
 }
 lspconfig.astro.setup {
   init_options = {
