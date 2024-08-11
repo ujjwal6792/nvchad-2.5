@@ -100,3 +100,11 @@ map("n", "<leader>dus", function()
   local sidebar = widgets.sidebar(widgets.scopes)
   sidebar.open()
 end, { desc = "Open debugging sidebar" })
+
+-- gitsigns
+local gitsigns = require "gitsigns"
+map("n", "<leader>gg", gitsigns.preview_hunk, { desc = "git preview hunk" })
+map("n", "<leader>gh", gitsigns.toggle_deleted, { desc = "git toggle deleted" })
+map("n", "<leader>gs", gitsigns.stage_hunk, { desc = "git stage hunk" })
+map("n", "<leader>gu", gitsigns.undo_stage_hunk, { desc = "git undo stage hunk" })
+map("n", "<leader>gr", gitsigns.reset_hunk, { desc = "git reset hunk" })
