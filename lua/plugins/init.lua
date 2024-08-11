@@ -222,50 +222,29 @@ return {
   },
 
   {
-    "simrat39/rust-tools.nvim",
-    ft = "rust",
-    dependencies = "neovim/nvim-lspconfig",
-    config = function(_)
-      require("rust-tools").setup {
+    "mrcjkb/rustaceanvim",
+    version = "^5", -- Recommended
+    lazy = false, -- This plugin is already lazy
+    config = function()
+      vim.g.rustaceanvim = {
+        -- Plugin configuration
+        tools = {},
+        -- LSP configuration
         server = {
-          capabilities = require("cmp_nvim_lsp").default_capabilities(),
-          on_attach = function(_, bufnr)
-            vim.keymap.set(
-              "n",
-              "<Leader>k",
-              require("rust-tools").hover_actions.hover_actions,
-              { buffer = bufnr, desc = "rust-tools hover actions" }
-            )
-            vim.keymap.set(
-              "n",
-              "<Leader>a",
-              require("rust-tools").code_action_group.code_action_group,
-              { buffer = bufnr, desc = "rust-tools code actions" }
-            )
+          on_attach = function(client, bufnr)
+            -- you can also put keymaps in here
           end,
-        },
-        tools = {
-          hover_actions = {
-            auto_focus = true,
-          },
-          assist = {
-            importEnforceGranularity = true,
-            importPrefix = "crate",
-          },
-          cargo = {
-            allFeatures = true,
-          },
-          checkOnSave = {
-            command = "clippy",
-          },
-          inlayHints = { locationLinks = false },
-          diagnostics = {
-            enable = true,
-            experimental = {
-              enable = true,
+          default_settings = {
+            -- rust-analyzer language server configuration
+            ["rust-analyzer"] = {
+              cargo = {
+                allFeatures = true,
+              },
             },
           },
         },
+        -- DAP configuration
+        dap = {},
       }
     end,
   },
@@ -277,19 +256,19 @@ return {
     end,
   },
 
-  {
-    "saecki/crates.nvim",
-    ft = { "rust", "toml" },
-    config = function(_, opts)
-      local crates = require "crates"
-      crates.setup(opts)
-      require("cmp").setup.buffer {
-        sources = { { name = "crates" } },
-      }
-      crates.show()
-      require("core.utils").load_mappings "crates"
-    end,
-  },
+  -- {
+  --   "saecki/crates.nvim",
+  --   ft = { "rust", "toml" },
+  --   config = function(_, opts)
+  --     local crates = require "crates"
+  --     crates.setup(opts)
+  --     require("cmp").setup.buffer {
+  --       sources = { { name = "crates" } },
+  --     }
+  --     crates.show()
+  --     require("core.utils").load_mappings "crates"
+  --   end,
+  -- },
 
   {
     "RRethy/vim-illuminate",
