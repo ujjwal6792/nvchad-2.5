@@ -225,20 +225,41 @@ return {
     "mrcjkb/rustaceanvim",
     version = "^5", -- Recommended
     lazy = false, -- This plugin is already lazy
+    ft = "rust",
+    dependencies = "neovim/nvim-lspconfig",
     config = function()
       vim.g.rustaceanvim = {
         -- Plugin configuration
         tools = {},
         -- LSP configuration
         server = {
-          on_attach = function(client, bufnr)
+          capabilities = require("cmp_nvim_lsp").default_capabilities(),
+          on_attach = function(_, bufnr)
             -- you can also put keymaps in here
+            vim.keymap.set("n", "<leader>a", function()
+              vim.cmd.RustLsp "codeAction" -- supports rust-analyzer's grouping
+              -- or vim.lsp.buf.codeAction() if you don't want grouping.
+            end, { silent = true, buffer = bufnr })
           end,
           default_settings = {
             -- rust-analyzer language server configuration
             ["rust-analyzer"] = {
+              hover_actions = {
+                auto_focus = true,
+              },
+              assist = {
+                importEnforceGranularity = true,
+                importPrefix = "crate",
+              },
               cargo = {
                 allFeatures = true,
+              },
+              inlayHints = { locationLinks = false },
+              diagnostics = {
+                enable = true,
+                experimental = {
+                  enable = true,
+                },
               },
             },
           },
