@@ -312,8 +312,13 @@ return {
   {
     "folke/trouble.nvim",
     lazy = false,
+    opts = {
+      auto_close = true,
+      focus = true,
+    },
+    cmd = "Trouble",
     dependencies = { "nvim-tree/nvim-web-devicons" },
-    keys = { { "<leader>tt", "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble Lsp screen" } },
+    keys = { { "<leader>tt", "<cmd>Trouble diagnostics toggle<cr>", desc = "Toggle Trouble Lsp screen" } },
   },
 
   {
