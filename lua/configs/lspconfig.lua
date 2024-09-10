@@ -47,7 +47,7 @@ local on_attach_svelte = function(client)
 end
 --
 
-lspconfig.tsserver.setup {
+lspconfig.ts_ls.setup {
   on_attach = on_attach,
   filetypes = { "javascript", "typescript", "typescriptreact", "javascriptreact", "javascript.jsx", "typescript.tsx" },
   cmd = { "typescript-language-server", "--stdio" },
