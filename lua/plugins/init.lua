@@ -56,7 +56,10 @@ return {
 
   {
     "JoosepAlviste/nvim-ts-context-commentstring",
-    enable_autocmd = false,
+    main = "ts_context_commentstring",
+    opts = {
+      enable_autocmd = false,
+    },
   },
 
   {
@@ -107,17 +110,15 @@ return {
 
   {
     "numToStr/Comment.nvim",
-    -- keys = {
-    --   { "gcc", mode = "n", desc = "Comment toggle current line" },
-    --   { "gc", mode = { "n", "o" }, desc = "Comment toggle linewise" },
-    --   { "gc", mode = "x", desc = "Comment toggle linewise (visual)" },
-    --   { "gbc", mode = "n", desc = "Comment toggle current block" },
-    --   { "gb", mode = { "n", "o" }, desc = "Comment toggle blockwise" },
-    --   { "gb", mode = "x", desc = "Comment toggle blockwise (visual)" },
-    -- },
-    -- init = function()
-    --   require("core.utils").load_mappings "comment"
-    -- end,
+    keys = {
+      { "gcc", mode = "n", desc = "Comment toggle current line" },
+      { "gc", mode = { "n", "o" }, desc = "Comment toggle linewise" },
+      { "gc", mode = "x", desc = "Comment toggle linewise (visual)" },
+      { "gbc", mode = "n", desc = "Comment toggle current block" },
+      { "gb", mode = { "n", "o" }, desc = "Comment toggle blockwise" },
+      { "gb", mode = "x", desc = "Comment toggle blockwise (visual)" },
+    },
+    version = "0.8.0",
     config = function(_)
       require("Comment").setup {
         pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
