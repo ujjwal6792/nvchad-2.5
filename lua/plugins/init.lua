@@ -375,17 +375,17 @@ return {
     keys = { { "<leader>mm", "<cmd>Glow<cr>", desc = "Preview markdown" } },
   },
 
-  {
-    "roobert/tailwindcss-colorizer-cmp.nvim",
-    lazy = false,
-    dependencies = { "hrsh7th/nvim-cmp" },
-    config = function()
-      require("tailwindcss-colorizer-cmp").setup {
-        color_square_width = 2,
-      }
-      require("cmp").config.formatting = {
-        format = require("tailwindcss-colorizer-cmp").formatter,
-      }
-    end,
-  },
+  -- {
+  --   "roobert/tailwindcss-colorizer-cmp.nvim",
+  --   lazy = false,
+  --   dependencies = { "hrsh7th/nvim-cmp" },
+  --   config = function()
+  --     require("tailwindcss-colorizer-cmp").setup {
+  --       color_square_width = 2,
+  --     }
+  --     require("cmp").config.formatting = {
+  --       format = require("tailwindcss-colorizer-cmp").formatter,
+  --     }
+  --   end,
+  -- },
 }

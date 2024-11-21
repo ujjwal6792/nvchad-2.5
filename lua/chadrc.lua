@@ -15,6 +15,10 @@ M.ui = { -- hl = highlights
   transparency = false,
 
   cmp = {
+    -- icons = true,
+    format_colors = {
+      tailwind = true,
+    },
     icons = true,
     lspkind_text = true,
     style = "default", -- default/flat_light/flat_dark/atom/atom_colored
