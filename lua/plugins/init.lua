@@ -73,6 +73,7 @@ return {
         "lua",
         "html",
         "css",
+        "json",
         "javascript",
         "typescript",
         "tsx",
