@@ -278,19 +278,18 @@ return {
     end,
   },
 
-  -- {
-  --   "saecki/crates.nvim",
-  --   ft = { "rust", "toml" },
-  --   config = function(_, opts)
-  --     local crates = require "crates"
-  --     crates.setup(opts)
-  --     require("cmp").setup.buffer {
-  --       sources = { { name = "crates" } },
-  --     }
-  --     crates.show()
-  --     require("core.utils").load_mappings "crates"
-  --   end,
-  -- },
+  {
+    "saecki/crates.nvim",
+    ft = { "rust", "toml" },
+    config = function(_, opts)
+      local crates = require "crates"
+      crates.setup(opts)
+      require("cmp").setup.buffer {
+        sources = { { name = "crates" } },
+      }
+      crates.show()
+    end,
+  },
 
   {
     "RRethy/vim-illuminate",
@@ -394,14 +393,14 @@ return {
       integrations = {
         markdown = {
           enabled = true,
-          clear_in_insert_mode = false,
+          clear_in_insert_mode = true,
           download_remote_images = true,
           only_render_image_at_cursor = false,
           filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
         },
         neorg = {
           enabled = true,
-          clear_in_insert_mode = false,
+          clear_in_insert_mode = true,
           download_remote_images = true,
           only_render_image_at_cursor = false,
           filetypes = { "norg" },

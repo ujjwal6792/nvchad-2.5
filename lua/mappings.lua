@@ -110,3 +110,8 @@ map("n", "<leader>gu", gitsigns.undo_stage_hunk, { desc = "git undo stage hunk" 
 map("n", "<leader>gr", gitsigns.reset_hunk, { desc = "git reset hunk" })
 map("n", "]c", gitsigns.next_hunk, { desc = "go to next hunk" })
 map("n", "[c", gitsigns.prev_hunk, { desc = "go to previous hunk" })
+
+if vim.fn.getenv "TERM_PROGRAM" == "ghostty" then
+  vim.opt.title = true
+  vim.opt.titlestring = "%{fnamemodify(getcwd(), ':t')}"
+end
