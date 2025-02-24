@@ -3,7 +3,7 @@
 
 ---@type ChadrcConfig
 local M = {}
-
+M.base46 = { theme = "catppuccin" }
 M.ui = { -- hl = highlights
   hl_add = {},
   hl_override = {
