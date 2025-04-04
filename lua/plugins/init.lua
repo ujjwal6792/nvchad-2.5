@@ -1,4 +1,7 @@
 return {
+  "nvzone/volt",
+  { "nvzone/minty", cmd = { "Huefy", "Shades" } },
+
   {
     "stevearc/conform.nvim",
     event = "BufWritePre", -- uncomment for format on save
