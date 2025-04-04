@@ -4,6 +4,8 @@ require "nvchad.mappings"
 local g = vim.g
 local api = vim.api
 local map = vim.keymap.set
+local uv = vim.loop
+local fn = vim.fn
 
 local function opts_to_id(id)
   for _, opts in pairs(g.nvchad_terms) do
@@ -111,7 +113,24 @@ map("n", "<leader>gr", gitsigns.reset_hunk, { desc = "git reset hunk" })
 map("n", "]c", gitsigns.next_hunk, { desc = "go to next hunk" })
 map("n", "[c", gitsigns.prev_hunk, { desc = "go to previous hunk" })
 
-if vim.fn.getenv "TERM_PROGRAM" == "ghostty" then
+-- rust cargo run
+-- Get the full path to Cargo.toml in the current working directory
+local cargo_toml = fn.getcwd() .. "/Cargo.toml"
+
+-- Check if the file exists
+if uv.fs_stat(cargo_toml) then
+  vim.keymap.set("n", "<leader>rc", function()
+    require("nvchad.term").runner {
+      pos = "float",
+      cmd = "cargo run",
+      id = "rcr",
+      clear_cmd = false,
+    }
+  end, { desc = "cargo run" })
+end
+
+-- ghostty show app name in tab
+if fn.getenv "TERM_PROGRAM" == "ghostty" then
   vim.opt.title = true
   vim.opt.titlestring = "%{fnamemodify(getcwd(), ':t')}"
 end
