@@ -43,7 +43,7 @@ return {
         "prismals",
         "svelte",
         -- rust stuff
-        "rust-analyzer",
+        -- "rust-analyzer",
         -- go stuff
         "gopls",
         "golangci-lint",
@@ -218,16 +218,8 @@ return {
 
   -- rust plugins
   {
-    "rust-lang/rust.vim",
-    ft = "rust",
-    init = function()
-      vim.g.rustfmt_autosave = 1
-    end,
-  },
-
-  {
     "mrcjkb/rustaceanvim",
-    version = "^5", -- Recommended
+    version = "^6", -- Recommended
     lazy = false, -- This plugin is already lazy
     ft = "rust",
     dependencies = "neovim/nvim-lspconfig",
@@ -240,10 +232,21 @@ return {
           capabilities = require("cmp_nvim_lsp").default_capabilities(),
           on_attach = function(_, bufnr)
             -- you can also put keymaps in here
-            vim.keymap.set("n", "<leader>a", function()
-              vim.cmd.RustLsp "codeAction" -- supports rust-analyzer's grouping
+            vim.keymap.set("n", "<leader>ra", function()
+              vim.lsp.buf.codeAction()
+              -- vim.cmd.RustLsp "codeAction" -- supports rust-analyzer's grouping
               -- or vim.lsp.buf.codeAction() if you don't want grouping.
-            end, { silent = true, buffer = bufnr })
+            end, { silent = true, buffer = bufnr, desc = "rust lsp actions" })
+
+            vim.keymap.set(
+              "n",
+              "<leader>rs",
+              ":RustAnalyzer restart<CR>",
+              { silent = true, buffer = bufnr, desc = "rust lsp restart" }
+            )
+            vim.keymap.set("n", "<leader>re", function()
+              vim.cmd.RustLsp "explainError"
+            end, { silent = true, buffer = bufnr, desc = "rust explain errors" })
           end,
           default_settings = {
             -- rust-analyzer language server configuration
