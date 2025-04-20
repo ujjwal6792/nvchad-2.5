@@ -113,6 +113,9 @@ return {
 
   {
     "numToStr/Comment.nvim",
+    dependencies = {
+      "JoosepAlviste/nvim-ts-context-commentstring",
+    },
     keys = {
       { "gcc", mode = "n", desc = "Comment toggle current line" },
       { "gc", mode = { "n", "o" }, desc = "Comment toggle linewise" },
@@ -121,10 +124,25 @@ return {
       { "gb", mode = { "n", "o" }, desc = "Comment toggle blockwise" },
       { "gb", mode = "x", desc = "Comment toggle blockwise (visual)" },
     },
-    version = "0.8.0",
-    config = function(_)
+    config = function()
       require("Comment").setup {
-        pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+        pre_hook = function(ctx)
+          local U = require "Comment.utils"
+          local utils = require "ts_context_commentstring.utils"
+          local internal = require "ts_context_commentstring.internal"
+
+          local location = nil
+          if ctx.ctype == U.ctype.block then
+            location = utils.get_cursor_location()
+          elseif ctx.cmotion == U.cmotion.v or ctx.cmotion == U.cmotion.V then
+            location = utils.get_visual_start_location()
+          end
+
+          return internal.calculate_commentstring {
+            key = ctx.ctype == U.ctype.line and "__default" or "__multiline",
+            location = location,
+          }
+        end,
       }
     end,
   },
@@ -173,6 +191,7 @@ return {
   {
     "windwp/nvim-ts-autotag",
     dependencies = "nvim-treesitter/nvim-treesitter",
+    ft = { "html", "javascript", "typescript", "javascriptreact", "typescriptreact", "svelte", "vue", "astro" },
     config = function()
       require("nvim-ts-autotag").setup {
         opts = {
