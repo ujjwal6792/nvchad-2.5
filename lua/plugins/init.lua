@@ -212,10 +212,11 @@ return {
     config = function()
       require("projectmgr").setup {
         autogit = {
-          enabled = true,
+          enabled = false,
           command = "git pull --ff-only > .git/fastforward.log 2>&1",
         },
-        session = { enabled = true, file = ".git/Session.vim" },
+        reopen = false,
+        session = { enabled = true, file = "../../Session.vim" },
       }
     end,
   },

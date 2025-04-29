@@ -16,6 +16,8 @@ local function opts_to_id(id)
 end
 
 map("n", ";", ":", { desc = "CMD enter command mode" })
+-- Remap :q to quitall
+vim.api.nvim_set_keymap("n", ":q", ":quitall<CR>", { noremap = true, silent = true })
 -- map("i", "jk", "<ESC>")
 
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
