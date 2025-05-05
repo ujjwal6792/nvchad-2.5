@@ -107,6 +107,7 @@ end, { desc = "Open debugging sidebar" })
 
 -- gitsigns
 local gitsigns = require "gitsigns"
+map("n", "<leader>gb", "<cmd>:Gitsigns blame_line<CR>", { desc = "git blame line" })
 map("n", "<leader>gg", gitsigns.preview_hunk, { desc = "git preview hunk" })
 map("n", "<leader>gh", gitsigns.toggle_deleted, { desc = "git toggle deleted" })
 map("n", "<leader>gs", gitsigns.stage_hunk, { desc = "git stage hunk" })
