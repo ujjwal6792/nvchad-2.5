@@ -15,6 +15,12 @@ local function opts_to_id(id)
   end
 end
 
+-- Disable default 's' in Normal mode
+vim.keymap.set("n", "s", "<Nop>")
+
+-- Disable default 's' in Visual mode (optional)
+vim.keymap.set("x", "s", "<Nop>")
+
 map("n", ";", ":", { desc = "CMD enter command mode" })
 -- Remap :q to quitall
 vim.api.nvim_set_keymap("n", ":q<Enter>", ":quitall<CR>", { noremap = true, silent = true })

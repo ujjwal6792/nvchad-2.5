@@ -147,24 +147,24 @@ return {
     end,
   },
 
-  {
-    "ggandor/leap.nvim",
-    keys = {
-      { "s", mode = { "n", "x", "o" }, desc = "Leap forward to" },
-      { "S", mode = { "n", "x", "o" }, desc = "Leap backward to" },
-      { "gs", mode = { "n", "x", "o" }, desc = "Leap from windows" },
-    },
-    config = function(_, opts)
-      local leap = require "leap"
-      for k, v in pairs(opts) do
-        leap.opts[k] = v
-      end
-      leap.add_default_mappings(true)
-      vim.keymap.del({ "x", "o" }, "x")
-      vim.keymap.del({ "x", "o" }, "X")
-    end,
-  },
-
+  --[[ { ]]
+  --[[   "ggandor/leap.nvim", ]]
+  --[[   keys = { ]]
+  --[[     { "s", mode = { "n", "x", "o" }, desc = "Leap forward to" }, ]]
+  --[[     { "S", mode = { "n", "x", "o" }, desc = "Leap backward to" }, ]]
+  --[[     { "gs", mode = { "n", "x", "o" }, desc = "Leap from windows" }, ]]
+  --[[   }, ]]
+  --[[   config = function(_, opts) ]]
+  --[[     local leap = require "leap" ]]
+  --[[     for k, v in pairs(opts) do ]]
+  --[[       leap.opts[k] = v ]]
+  --[[     end ]]
+  --[[     leap.add_default_mappings(true) ]]
+  --[[     vim.keymap.del({ "x", "o" }, "x") ]]
+  --[[     vim.keymap.del({ "x", "o" }, "X") ]]
+  --[[   end, ]]
+  --[[ }, ]]
+  --[[]]
   {
     "nvim-pack/nvim-spectre",
     cmd = "Spectre",
@@ -452,7 +452,7 @@ return {
 
     ---enables autocomplete for opts
     ---@module "auto-session"
-    ---@type AutoSession.Config
+    --[[ ---@type AutoSession.Config ]]
     opts = {
       -- ⚠️ This will only work if Telescope.nvim is installed
       -- The following are already the default values, no need to provide them if these are already the settings you want.
@@ -484,6 +484,44 @@ return {
     lazy = false, -- Disable lazy loading as some `lazy.nvim` distributions set `lazy = true` by default
     version = "*", -- Pin Neorg to the latest stable release
     config = true,
+  },
+
+  {
+    "echasnovski/mini.nvim",
+    lazy = false,
+    version = "*",
+    config = function()
+      require("mini.ai").setup()
+      require("mini.move").setup {
+        mappings = {
+          -- Move visual selection in Visual mode. Defaults are Alt (Meta) + hjkl.
+          left = "<M-a>",
+          right = "<M-d>",
+          down = "<M-s>",
+          up = "<M-w>",
+
+          -- Move current line in Normal mode
+          line_left = "<M-a>",
+          line_right = "<M-d>",
+          line_down = "<M-s>",
+          line_up = "<M-w>",
+        },
+      }
+      require("mini.surround").setup {
+        mappings = {
+          add = "sa", -- Add surrounding in Normal and Visual modes
+          delete = "sd", -- Delete surrounding
+          find = "sf", -- Find surrounding (to the right)
+          find_left = "sF", -- Find surrounding (to the left)
+          highlight = "sh", -- Highlight surrounding
+          replace = "sr", -- Replace surrounding
+          update_n_lines = "sn", -- Update `n_lines`
+
+          suffix_last = "l", -- Suffix to search with "prev" method
+          suffix_next = "n", -- Suffix to search with "next" method
+        },
+      }
+    end,
   },
 
   -- {
