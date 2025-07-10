@@ -4,7 +4,7 @@ local capabilities = require("nvchad.configs.lspconfig").capabilities
 local lspconfig = require "lspconfig"
 --local util = require "lspconfig/util"
 -- if you just want default config for the servers then put them in a table
-local servers = { "html", "cssls", "clangd" }
+local servers = { "html", "cssls", "clangd", "dockerls", "docker_compose_language_service" }
 
 -- You will likely want to reduce updatetime which affects CursorHold
 -- note: this setting is global and should be set only once
@@ -124,33 +124,6 @@ lspconfig.gopls.setup {
   },
 }
 
--- lspconfig.golangci_lint_ls.setup {
---   on_attach = on_attach,
---   cmd = { "golangci-lint-langserver" },
---   filetypes = { "go", "gomod", "gosum", "gowork" },
---   init_options = {
---     command = { "golangci-lint", "run", "--out-format", "json" },
---   },
--- }
-
--- if not lspconfig.golangcilsp then
---       local configs = require "lspconfig/configs"
---
---       configs.golangcilsp = {
---          default_config = {
---             cmd = { "golangci-lint-langserver" },
---             root_dir = lspconfig.util.root_pattern(".git", "go.mod"),
---             init_options = {
---                command = { "golangci-lint", "run", "--out-format", "json" },
---             },
---          },
---       }
---    end
-
--- lspconfig.golangcilsp.setup {
--- filetypes = { "go" },
--- }
-
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -158,5 +131,18 @@ for _, lsp in ipairs(servers) do
   }
 end
 
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = { "docker-compose*.yml", "docker-compose*.yaml" },
+  callback = function()
+    vim.bo.filetype = "yaml.docker-compose"
+  end,
+})
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = { "tsconfig*.json" },
+  callback = function()
+    vim.bo.filetype = "jsonc"
+  end,
+})
 --
 -- lspconfig.pyright.setup { blabla}

@@ -25,7 +25,6 @@ return {
         -- lua stuff
         "lua-language-server",
         "stylua",
-
         -- web dev stuff
         "jq",
         "css-lsp",
@@ -42,8 +41,13 @@ return {
         "eslint_d",
         "prismals",
         "svelte",
-        -- rust stuff
-        -- "rust-analyzer",
+        -- docker
+        "dockerls",
+        "docker_compose_language_service",
+        --yaml
+        "yamlfmt",
+        -- toml
+        "taplo",
         -- go stuff
         "gopls",
         "golangci-lint",

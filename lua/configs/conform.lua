@@ -5,7 +5,10 @@ local options = {
     html = { "prettierd" },
     javascript = { "prettierd" },
     typescript = { "prettierd" },
-    json = { "jq", "prettierd", stop_after_first = true },
+    json = { "prettierd", "jq" },
+    jsonc = { "prettierd", "jq" },
+    yaml = { "prettierd", "yamlfmt" },
+    toml = { "taplo" },
     markdown = { "prettierd" },
   },
   format_on_save = {
