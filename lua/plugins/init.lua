@@ -220,7 +220,7 @@ return {
           command = "git pull --ff-only > .git/fastforward.log 2>&1",
         },
         reopen = false,
-        session = { enabled = true, file = "../../Session.vim" },
+        session = { enabled = false, file = "../../Session.vim" },
       }
     end,
   },
@@ -340,18 +340,6 @@ return {
   },
 
   {
-    "folke/trouble.nvim",
-    lazy = false,
-    opts = {
-      auto_close = true,
-      focus = true,
-    },
-    cmd = "Trouble",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    keys = { { "<leader>tt", "<cmd>Trouble diagnostics toggle<cr>", desc = "Toggle Trouble Lsp screen" } },
-  },
-
-  {
     "karb94/neoscroll.nvim",
     lazy = false,
     config = function()
@@ -380,7 +368,22 @@ return {
   {
     "utilyre/barbecue.nvim",
     name = "barbecue",
-    ft = { "js", "jsx", "json", "svg", "rust", "ts", "tsx", "go", "javascript", "typescript", "lua", "markdown" },
+    ft = {
+      "js",
+      "jsx",
+      "json",
+      "svg",
+      "rust",
+      "ts",
+      "tsx",
+      "go",
+      "javascript",
+      "typescript",
+      "lua",
+      "markdown",
+      "yaml",
+      "env",
+    },
     version = "*",
     dependencies = {
       "SmiteshP/nvim-navic",
@@ -484,13 +487,6 @@ return {
   },
 
   {
-    "nvim-neorg/neorg",
-    lazy = false, -- Disable lazy loading as some `lazy.nvim` distributions set `lazy = true` by default
-    version = "*", -- Pin Neorg to the latest stable release
-    config = true,
-  },
-
-  {
     "echasnovski/mini.nvim",
     lazy = false,
     version = "*",
@@ -511,34 +507,20 @@ return {
           line_up = "<M-w>",
         },
       }
-      require("mini.surround").setup {
-        mappings = {
-          add = "sa", -- Add surrounding in Normal and Visual modes
-          delete = "sd", -- Delete surrounding
-          find = "sf", -- Find surrounding (to the right)
-          find_left = "sF", -- Find surrounding (to the left)
-          highlight = "sh", -- Highlight surrounding
-          replace = "sr", -- Replace surrounding
-          update_n_lines = "sn", -- Update `n_lines`
-
-          suffix_last = "l", -- Suffix to search with "prev" method
-          suffix_next = "n", -- Suffix to search with "next" method
-        },
-      }
+      --[[     require("mini.surround").setup { ]]
+      --[[       mappings = { ]]
+      --[[         add = "sa", -- Add surrounding in Normal and Visual modes ]]
+      --[[         delete = "sd", -- Delete surrounding ]]
+      --[[         find = "sf", -- Find surrounding (to the right) ]]
+      --[[         find_left = "sF", -- Find surrounding (to the left) ]]
+      --[[         highlight = "sh", -- Highlight surrounding ]]
+      --[[         replace = "sr", -- Replace surrounding ]]
+      --[[         update_n_lines = "sn", -- Update `n_lines` ]]
+      --[[]]
+      --[[         suffix_last = "l", -- Suffix to search with "prev" method ]]
+      --[[         suffix_next = "n", -- Suffix to search with "next" method ]]
+      --[[       }, ]]
+      --[[     } ]]
     end,
   },
-
-  -- {
-  --   "roobert/tailwindcss-colorizer-cmp.nvim",
-  --   lazy = false,
-  --   dependencies = { "hrsh7th/nvim-cmp" },
-  --   config = function()
-  --     require("tailwindcss-colorizer-cmp").setup {
-  --       color_square_width = 2,
-  --     }
-  --     require("cmp").config.formatting = {
-  --       format = require("tailwindcss-colorizer-cmp").formatter,
-  --     }
-  --   end,
-  -- },
 }
