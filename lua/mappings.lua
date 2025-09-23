@@ -28,6 +28,17 @@ vim.api.nvim_set_keymap("n", ":q<Enter>", ":quitall<CR>", { noremap = true, sile
 
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
 
+-- Comment.nvim blockwise toggle
+map("n", "<leader>/", function()
+  require("Comment.api").toggle.blockwise.current()
+end, { desc = "Toggle blockwise comment" })
+
+map("v", "<leader>/", function()
+  local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
+  vim.api.nvim_feedkeys(esc, "nx", false)
+  require("Comment.api").toggle.blockwise(vim.fn.visualmode())
+end, { desc = "Toggle blockwise comment (visual)" })
+
 -- nvimtree
 map("n", "<leader>e", "<cmd> NvimTreeFocus<CR>", { desc = "Focus nvimtree" })
 map("n", "<leader>we", "<cmd> NvimTreeRefresh<CR>", { desc = "Refresh nvimtree" })
