@@ -394,7 +394,7 @@ return {
     },
   },
 
-  {
+  --[[ {
     "ellisonleao/glow.nvim",
     ft = { "markdown", "mdx", "md" },
     config = function()
@@ -404,7 +404,20 @@ return {
       }
     end,
     cmd = "Glow",
-    keys = { { "<leader>mm", "<cmd>Glow<cr>", desc = "Preview markdown" } },
+    keys = { { "<leader>mg", "<cmd>Glow<cr>", desc = "Preview markdown using glow" } },
+  }, ]]
+  {
+    "OXY2DEV/markview.nvim",
+    lazy = false,
+    preview = {
+      icon_provider = "devicons", -- "mini" or "devicons"
+    },
+    keys = { { "<leader>mm", "<cmd>Markview toggle<cr>", desc = "Preview markdown toggle" } },
+    -- For blink.cmp's completion
+    -- source
+    -- dependencies = {
+    --     "saghen/blink.cmp"
+    -- },
   },
   {
     "3rd/image.nvim",
