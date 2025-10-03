@@ -8,17 +8,15 @@ local conf = require("telescope.config").values
 local actions = require "telescope.actions"
 local action_state = require "telescope.actions.state"
 local previewers = require "telescope.previewers"
-local devicons = require "nvim-web-devicons"
 
-local notes_root = vim.fn.expand "~/notes"
-local clipboard = nil -- { mode = "cut"|"copy", source = "path" }
+local notes_dir = vim.fn.expand "~/notes"
 
 --------------------------------------------------
 -- Helpers
 --------------------------------------------------
-local function ensure_dir(dir)
-  if not vim.loop.fs_stat(dir) then
-    vim.fn.mkdir(dir, "p")
+local function ensure_notes_dir()
+  if not vim.loop.fs_stat(notes_dir) then
+    vim.fn.mkdir(notes_dir, "p")
   end
 end
 
@@ -26,21 +24,23 @@ local function slugify(str)
   return str:lower():gsub("[^a-z0-9]+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
 end
 
-local function list_entries(dir)
-  ensure_dir(dir)
-  -- only scan *current level*, not recursively
-  local files = scan.scan_dir(dir, { hidden = false, add_dirs = true, depth = 1 })
+local function is_date_filename(name)
+  return name:match "^%d%d%d%d%-%d%d%-%d%d%.md$"
+end
+
+local function list_notes(cwd)
+  ensure_notes_dir()
+  cwd = cwd or notes_dir
+  local files = scan.scan_dir(cwd, { hidden = false, add_dirs = true, depth = 1 })
   local entries = {}
   for _, file in ipairs(files) do
-    if file:match "%.md$" or vim.loop.fs_stat(file).type == "directory" then
-      local stat = vim.loop.fs_stat(file)
+    local stat = vim.loop.fs_stat(file)
+    if stat and (file:match "%.md$" or stat.type == "directory") then
       local created = os.date("%Y-%m-%d %H:%M", stat.ctime.sec)
-      local rel = Path:new(file):make_relative(notes_root)
-      local icon, _ = devicons.get_icon(file, nil, { default = true })
       table.insert(entries, {
         file = file,
-        display = icon .. " " .. rel .. " [" .. created .. "]",
-        ordinal = rel,
+        display = Path:new(file):make_relative(cwd),
+        created = created,
         is_dir = (stat.type == "directory"),
       })
     end
@@ -49,82 +49,72 @@ local function list_entries(dir)
 end
 
 --------------------------------------------------
--- Custom previewer
+-- Telescope picker
 --------------------------------------------------
-local folder_previewer = previewers.new_buffer_previewer {
-  define_preview = function(self, entry)
-    if entry.is_dir then
-      local children = scan.scan_dir(entry.file, { hidden = false, depth = 1, add_dirs = true })
-      local lines = { "📂 " .. Path:new(entry.file):make_relative(notes_root), string.rep("=", 40), "" }
-      for _, child in ipairs(children) do
-        local name = Path:new(child):make_relative(entry.file)
-        if vim.loop.fs_stat(child).type == "directory" then
-          table.insert(lines, " " .. name .. "/")
-        else
-          table.insert(lines, " " .. name)
-        end
-      end
-      vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
-    else
-      conf.buffer_previewer_maker(entry.value or entry.file, self.state.bufnr, {
-        bufname = self.state.bufname,
-      })
-    end
-  end,
-}
-
---------------------------------------------------
--- Picker
---------------------------------------------------
-local function open_picker(cwd)
-  cwd = cwd or notes_root
-  local entries = list_entries(cwd)
+function M.open_notes(cwd)
+  ensure_notes_dir()
+  cwd = cwd or notes_dir
+  local entries = list_notes(cwd)
 
   pickers
     .new({}, {
-      prompt_title = "Notes: " .. Path:new(cwd):make_relative(notes_root),
+      prompt_title = "Notes",
       finder = finders.new_table {
         results = entries,
         entry_maker = function(e)
-          return e
+          return {
+            value = e,
+            display = (e.is_dir and " " or " ") .. e.display .. "  [" .. e.created .. "]",
+            ordinal = e.display,
+          }
         end,
       },
       sorter = conf.generic_sorter {},
-      previewer = folder_previewer,
-      layout_strategy = "horizontal",
-      layout_config = {
-        preview_width = 0.55,
-        width = 0.9,
-        height = 0.9,
+
+      previewer = previewers.new_buffer_previewer {
+        define_preview = function(self, entry)
+          local buf = self.state.bufnr
+          if entry.value.is_dir then
+            -- Show folder contents
+            local children = scan.scan_dir(entry.value.file, { hidden = false, depth = 1, add_dirs = true })
+            local lines = { "📂 " .. Path:new(entry.value.file):make_relative(notes_dir), string.rep("=", 40), "" }
+            for _, child in ipairs(children) do
+              local name = Path:new(child):make_relative(entry.value.file)
+              if vim.loop.fs_stat(child).type == "directory" then
+                table.insert(lines, " " .. name .. "/")
+              else
+                table.insert(lines, " " .. name)
+              end
+            end
+            vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+            vim.bo[buf].modifiable = false
+          else
+            -- Render markdown file content in buffer
+            local lines = vim.fn.readfile(entry.value.file)
+            vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+            vim.bo[buf].filetype = "markdown"
+            vim.bo[buf].modifiable = false
+          end
+        end,
       },
       attach_mappings = function(prompt_bufnr, map)
-        local function refresh()
+        local function open_file()
+          local selection = action_state.get_selected_entry().value
           actions.close(prompt_bufnr)
-          open_picker(cwd)
-        end
-
-        local function open_entry()
-          local selection = action_state.get_selected_entry()
           if selection.is_dir then
-            actions.close(prompt_bufnr)
-            open_picker(selection.file)
+            M.open_notes(selection.file)
           else
-            actions.close(prompt_bufnr)
             vim.cmd("edit " .. selection.file)
           end
         end
 
-        local function go_up()
-          if cwd ~= notes_root then
-            actions.close(prompt_bufnr)
-            open_picker(Path:new(cwd):parent():absolute())
-          else
-            actions.close(prompt_bufnr)
-          end
-        end
-
         local function create_note()
-          local fname = os.date "%Y-%m-%d" .. ".md"
+          local fname = vim.fn.input "Note name (blank = date): "
+          if fname == "" then
+            fname = os.date "%Y-%m-%d" .. ".md"
+          elseif not fname:match "%.md$" then
+            fname = fname .. ".md"
+          end
           local path = Path:new(cwd .. "/" .. fname)
           if not path:exists() then
             path:touch { parents = true }
@@ -138,60 +128,35 @@ local function open_picker(cwd)
           if folder_name ~= "" then
             vim.fn.mkdir(cwd .. "/" .. folder_name, "p")
           end
-          refresh()
+          M.open_notes(cwd)
         end
 
-        local function rename_entry()
-          local selection = action_state.get_selected_entry()
+        local function rename_file()
+          local selection = action_state.get_selected_entry().value
           local new_name = vim.fn.input("New name: ", vim.fn.fnamemodify(selection.file, ":t"))
           if new_name ~= "" then
             os.rename(selection.file, Path:new(cwd .. "/" .. new_name):absolute())
           end
-          refresh()
+          M.open_notes(cwd)
         end
 
-        local function delete_entry()
-          local selection = action_state.get_selected_entry()
-          vim.fn.delete(selection.file, "rf")
-          refresh()
-        end
-
-        local function cut_entry()
-          local selection = action_state.get_selected_entry()
-          clipboard = { mode = "cut", source = selection.file }
-          print("Cut: " .. selection.file)
-        end
-
-        local function copy_entry()
-          local selection = action_state.get_selected_entry()
-          clipboard = { mode = "copy", source = selection.file }
-          print("Copied: " .. selection.file)
-        end
-
-        local function paste_entry()
-          if not clipboard then
-            return
+        local function delete_file()
+          local selection = action_state.get_selected_entry().value
+          local confirm = vim.fn.input("Delete " .. selection.display .. "? (y/n) ")
+          if confirm:lower() == "y" then
+            vim.fn.delete(selection.file, "rf")
+            print("Deleted: " .. selection.file)
+          else
+            print "Cancelled"
           end
-          local target = cwd .. "/" .. Path:new(clipboard.source):name()
-          if clipboard.mode == "cut" then
-            os.rename(clipboard.source, target)
-            clipboard = nil
-          elseif clipboard.mode == "copy" then
-            vim.fn.system { "cp", "-r", clipboard.source, target }
-          end
-          refresh()
+          M.open_notes(cwd)
         end
 
-        -- Keymaps
-        map("i", "<CR>", open_entry)
-        map("i", "<Esc>", go_up)
+        map("i", "<CR>", open_file)
         map("i", "<C-a>", create_note)
         map("i", "<C-f>", create_folder)
-        map("i", "<C-r>", rename_entry)
-        map("i", "<C-d>", delete_entry)
-        map("i", "<C-x>", cut_entry)
-        map("i", "<C-c>", copy_entry)
-        map("i", "<C-p>", paste_entry)
+        map("i", "<C-r>", rename_file)
+        map("i", "<C-d>", delete_file)
         map("i", "<Tab>", actions.move_selection_next)
         map("i", "<S-Tab>", actions.move_selection_previous)
 
@@ -201,19 +166,20 @@ local function open_picker(cwd)
     :find()
 end
 
-function M.open_notes()
-  ensure_dir(notes_root)
-  open_picker(notes_root)
-end
-
 --------------------------------------------------
--- Auto-rename on heading change
+-- Autocmd: auto-rename on heading change
 --------------------------------------------------
 local function maybe_rename_note()
   local buf = vim.api.nvim_get_current_buf()
   local fname = vim.api.nvim_buf_get_name(buf)
+  local basename = vim.fn.fnamemodify(fname, ":t")
 
-  if not fname:match(notes_root) or not fname:match "%.md$" then
+  if not fname:match(notes_dir) or not fname:match "%.md$" then
+    return
+  end
+
+  -- Only rename if filename is in date format
+  if not is_date_filename(basename) then
     return
   end
 
@@ -243,7 +209,7 @@ local function maybe_rename_note()
 end
 
 vim.api.nvim_create_autocmd("BufWritePost", {
-  pattern = notes_root .. "/**/*.md",
+  pattern = notes_dir .. "/*.md",
   callback = maybe_rename_note,
 })
 
