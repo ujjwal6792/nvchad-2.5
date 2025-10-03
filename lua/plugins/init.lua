@@ -1,7 +1,24 @@
 return {
   "nvzone/volt",
   { "nvzone/minty", cmd = { "Huefy", "Shades" } },
-
+  {
+    "notes",
+    lazy = false,
+    dir = "~/.config/nvim/lua/notes", -- local plugin
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope.nvim",
+    },
+    keys = {
+      {
+        "<leader>mn",
+        function()
+          require("notes").open_notes()
+        end,
+        desc = "Open Notes",
+      },
+    },
+  },
   {
     "stevearc/conform.nvim",
     event = "BufWritePre", -- uncomment for format on save
