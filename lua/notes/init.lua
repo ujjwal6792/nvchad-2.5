@@ -25,7 +25,7 @@ local function slugify(str)
 end
 
 local function is_date_filename(name)
-  return name:match "^%d%d%d%d%-%d%d%-%d%d%.md$"
+  return name:match "^%d%d%d%d%-%d%d%-%d%d%-%d%d%-%d%d%-%d%d%.md$"
 end
 
 local function list_notes(cwd)
@@ -53,6 +53,7 @@ end
 --------------------------------------------------
 function M.open_notes(cwd)
   ensure_notes_dir()
+  vim.cmd("lcd " .. notes_dir)
   cwd = cwd or notes_dir
   local entries = list_notes(cwd)
 
@@ -64,13 +65,12 @@ function M.open_notes(cwd)
         entry_maker = function(e)
           return {
             value = e,
-            display = (e.is_dir and " " or " ") .. e.display .. "  [" .. e.created .. "]",
+            display = (e.is_dir and "  " or "  ") .. e.display .. "  [" .. e.created .. "]",
             ordinal = e.display,
           }
         end,
       },
       sorter = conf.generic_sorter {},
-
       previewer = previewers.new_buffer_previewer {
         define_preview = function(self, entry)
           local buf = self.state.bufnr
@@ -81,9 +81,9 @@ function M.open_notes(cwd)
             for _, child in ipairs(children) do
               local name = Path:new(child):make_relative(entry.value.file)
               if vim.loop.fs_stat(child).type == "directory" then
-                table.insert(lines, " " .. name .. "/")
+                table.insert(lines, "  " .. name .. "/")
               else
-                table.insert(lines, " " .. name)
+                table.insert(lines, "  " .. name)
               end
             end
             vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
@@ -111,7 +111,7 @@ function M.open_notes(cwd)
         local function create_note()
           local fname = vim.fn.input "Note name (blank = date): "
           if fname == "" then
-            fname = os.date "%Y-%m-%d" .. ".md"
+            fname = os.date "%Y-%m-%d-%H-%M-%S" .. ".md"
           elseif not fname:match "%.md$" then
             fname = fname .. ".md"
           end
