@@ -53,13 +53,21 @@ end
 --------------------------------------------------
 function M.open_notes(cwd)
   ensure_notes_dir()
-  vim.cmd("lcd " .. notes_dir)
   cwd = cwd or notes_dir
+  vim.cmd("lcd " .. notes_dir)
   local entries = list_notes(cwd)
+
+  -- Breadcrumbs relative to base notes_dir
+  local breadcrumb = Path:new(cwd):make_relative(notes_dir)
+  if breadcrumb == "" then
+    breadcrumb = "notes"
+  else
+    breadcrumb = "notes/" .. breadcrumb
+  end
 
   pickers
     .new({}, {
-      prompt_title = "Notes",
+      prompt_title = breadcrumb,
       finder = finders.new_table {
         results = entries,
         entry_maker = function(e)
@@ -108,7 +116,21 @@ function M.open_notes(cwd)
           end
         end
 
-        local function create_note()
+        -- ESC mapping for folder navigation
+        local function esc_handler()
+          if cwd == notes_dir then
+            actions.close(prompt_bufnr)
+          else
+            local parent = Path:new(cwd):parent():absolute()
+            M.open_notes(parent)
+          end
+        end
+
+        map("i", "<Esc>", esc_handler)
+        map("n", "<Esc>", esc_handler)
+
+        map("i", "<CR>", open_file)
+        map("i", "<C-a>", function()
           local fname = vim.fn.input "Note name (blank = date): "
           if fname == "" then
             fname = os.date "%Y-%m-%d-%H-%M-%S" .. ".md"
@@ -121,26 +143,23 @@ function M.open_notes(cwd)
           end
           actions.close(prompt_bufnr)
           vim.cmd("edit " .. path:absolute())
-        end
-
-        local function create_folder()
+        end)
+        map("i", "<C-f>", function()
           local folder_name = vim.fn.input "Folder name: "
           if folder_name ~= "" then
             vim.fn.mkdir(cwd .. "/" .. folder_name, "p")
           end
           M.open_notes(cwd)
-        end
-
-        local function rename_file()
+        end)
+        map("i", "<C-r>", function()
           local selection = action_state.get_selected_entry().value
           local new_name = vim.fn.input("New name: ", vim.fn.fnamemodify(selection.file, ":t"))
           if new_name ~= "" then
             os.rename(selection.file, Path:new(cwd .. "/" .. new_name):absolute())
           end
           M.open_notes(cwd)
-        end
-
-        local function delete_file()
+        end)
+        map("i", "<C-d>", function()
           local selection = action_state.get_selected_entry().value
           local confirm = vim.fn.input("Delete " .. selection.display .. "? (y/n) ")
           if confirm:lower() == "y" then
@@ -150,33 +169,11 @@ function M.open_notes(cwd)
             print "Cancelled"
           end
           M.open_notes(cwd)
-        end
+        end)
 
-        map("i", "<CR>", open_file)
-        map("i", "<C-a>", create_note)
-        map("i", "<C-f>", create_folder)
-        map("i", "<C-r>", rename_file)
-        map("i", "<C-d>", delete_file)
         map("i", "<Tab>", actions.move_selection_next)
         map("i", "<S-Tab>", actions.move_selection_previous)
-        map("i", "<Esc>", function()
-          local current_cwd = cwd or notes_dir
-          if current_cwd == notes_dir then
-            actions.close(prompt_bufnr)
-          else
-            local parent = Path:new(current_cwd):parent():absolute()
-            M.open_notes(parent)
-          end
-        end)
-        map("n", "<Esc>", function()
-          local current_cwd = cwd or notes_dir
-          if current_cwd == notes_dir then
-            actions.close(prompt_bufnr)
-          else
-            local parent = Path:new(current_cwd):parent():absolute()
-            M.open_notes(parent)
-          end
-        end)
+
         return true
       end,
     })
@@ -195,7 +192,6 @@ local function maybe_rename_note()
     return
   end
 
-  -- Only rename if filename is in date format
   if not is_date_filename(basename) then
     return
   end
