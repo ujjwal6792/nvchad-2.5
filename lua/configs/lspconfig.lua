@@ -1,17 +1,17 @@
+-- Replace the old lspconfig require with the native vim.lsp API
+-- local lspconfig = require "lspconfig"
+
+-- This is still valid if you are using NvChad's helper functions
 local on_attach = require("nvchad.configs.lspconfig").on_attach
--- local on_init = require("nvchad.configs.lspconfig").on_init
 local capabilities = require("nvchad.configs.lspconfig").capabilities
-local lspconfig = require "lspconfig"
---local util = require "lspconfig/util"
--- if you just want default config for the servers then put them in a table
-local servers = { "html", "cssls", "clangd", "dockerls", "docker_compose_language_service" }
 
 -- You will likely want to reduce updatetime which affects CursorHold
--- note: this setting is global and should be set only once
+-- Note: this setting is global and should be set only once
 vim.o.updatetime = 100
 vim.cmd [[autocmd! CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
 
 -- Diagnostic symbols in the sign column (gutter)
+-- Diagnostic configuration is not affected by the lspconfig API change
 vim.diagnostic.config {
   virtual_text = {
     prefix = "●",
@@ -31,18 +31,6 @@ vim.diagnostic.config {
   },
 }
 
-vim.diagnostic.config {
-  virtual_text = {
-    prefix = "●",
-  },
-  signs = true,
-  underline = true,
-  update_in_insert = true,
-  float = {
-    source = true, -- Or "if_many"
-  },
-}
-
 -- svelte lsp + neovim 0.9 issue fix
 local on_attach_svelte = function(client)
   if client.name == "svelte" then
@@ -50,7 +38,6 @@ local on_attach_svelte = function(client)
       pattern = { "*.js", "*.ts" },
       group = vim.api.nvim_create_augroup("svelte_ondidchangetsorjsfile", { clear = true }),
       callback = function(ctx)
-        -- Here use ctx.match instead of ctx.file
         client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
       end,
     })
@@ -58,46 +45,66 @@ local on_attach_svelte = function(client)
 
   -- attach keymaps if needed
 end
---
 
-lspconfig.ts_ls.setup {
+-- Use vim.lsp.config for servers that require custom settings
+vim.lsp.config("ts_ls", {
   on_attach = on_attach,
   filetypes = { "javascript", "typescript", "typescriptreact", "javascriptreact", "javascript.jsx", "typescript.tsx" },
   cmd = { "typescript-language-server", "--stdio" },
   capabilities = capabilities,
-}
-lspconfig.marksman.setup {
+})
+vim.lsp.enable "ts_ls"
+
+vim.lsp.config("marksman", {
   on_attach = on_attach,
   filetypes = { "markdown", "markdown.mdx", "markdown.md" },
   cmd = { "marksman", "server" },
-}
+})
 
-require("lspconfig").svelte.setup {
+vim.lsp.enable "marksman"
+
+vim.lsp.config("svelte", {
   on_attach = on_attach_svelte,
   capabilities = capabilities,
   filetypes = { "svelte" },
   cmd = { "svelteserver", "--stdio" },
-}
+})
 
-lspconfig.tailwindcss.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  -- filetypes = {
-  --   "astro, astro-markdown, gohtml, gohtmltmpl, html, html-eex, markdown, mdx, css, less, postcss, sass, scss, stylus, javascript, javascriptreact, typescript, typescriptreact, vue, svelte",
-  -- },
-}
-lspconfig.astro.setup {
+vim.lsp.enable "svelte"
+
+vim.lsp.config("astro", {
   init_options = {
     configuration = {},
-    on_attach = on_attach,
-    capabilities = capabilities,
     typescript = {
       serverPath = vim.fs.normalize "~/.nvm/versions/node/v19.9.0/lib/node_modules/typescript/lib/tsserverlibrary.js",
     },
   },
-}
+  on_attach = on_attach,
+  capabilities = capabilities,
+})
 
-lspconfig.prismals.setup {
+vim.lsp.enable "astro"
+
+vim.lsp.config("tailwindcss", {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  filetypes = {
+    "typescriptreact",
+    "javascriptreact",
+    "javascript.jsx",
+    "typescript.tsx",
+    "css",
+    "html",
+    "svelte",
+    "astro",
+  },
+  -- Note: The filetypes for tailwindcss are generally detected automatically.
+  -- filetypes = { ... },
+})
+
+vim.lsp.enable "tailwindcss"
+
+vim.lsp.config("prismals", {
   -- Adjust these paths based on your installation
   cmd = { "prisma-language-server", "--stdio" },
   settings = {
@@ -105,12 +112,14 @@ lspconfig.prismals.setup {
       enable = true,
     },
   },
-}
+})
 
-lspconfig.gopls.setup {
+vim.lsp.enable "prismals"
+
+vim.lsp.config("gopls", {
   on_attach = on_attach,
   capabilities = capabilities,
-  root_dir = lspconfig.util.root_pattern(".git", "go.mod"),
+  root_dir = vim.fs.root(0, { ".git", "go.mod" }),
   flags = {
     debounce_text_changes = 150,
   },
@@ -122,13 +131,14 @@ lspconfig.gopls.setup {
       usePlaceholders = true,
     },
   },
-}
+})
 
+vim.lsp.enable "gopls"
+
+-- Use vim.lsp.enable for servers that can use the default configuration
+local servers = { "html", "cssls", "clangd", "dockerls", "docker_compose_language_service" }
 for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    on_attach = on_attach,
-    capabilities = capabilities,
-  }
+  vim.lsp.enable(lsp)
 end
 
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
@@ -144,5 +154,3 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
     vim.bo.filetype = "jsonc"
   end,
 })
---
--- lspconfig.pyright.setup { blabla}
