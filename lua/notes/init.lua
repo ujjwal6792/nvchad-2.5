@@ -159,7 +159,24 @@ function M.open_notes(cwd)
         map("i", "<C-d>", delete_file)
         map("i", "<Tab>", actions.move_selection_next)
         map("i", "<S-Tab>", actions.move_selection_previous)
-
+        map("i", "<Esc>", function()
+          local current_cwd = cwd or notes_dir
+          if current_cwd == notes_dir then
+            actions.close(prompt_bufnr)
+          else
+            local parent = Path:new(current_cwd):parent():absolute()
+            M.open_notes(parent)
+          end
+        end)
+        map("n", "<Esc>", function()
+          local current_cwd = cwd or notes_dir
+          if current_cwd == notes_dir then
+            actions.close(prompt_bufnr)
+          else
+            local parent = Path:new(current_cwd):parent():absolute()
+            M.open_notes(parent)
+          end
+        end)
         return true
       end,
     })
