@@ -7,6 +7,7 @@ local finders = require "telescope.finders"
 local conf = require("telescope.config").values
 local actions = require "telescope.actions"
 local action_state = require "telescope.actions.state"
+local previewers = require "telescope.previewers"
 local devicons = require "nvim-web-devicons"
 
 local notes_root = vim.fn.expand "~/notes"
@@ -27,14 +28,15 @@ end
 
 local function list_entries(dir)
   ensure_dir(dir)
-  local files = scan.scan_dir(dir, { hidden = false, add_dirs = true })
+  -- only scan *current level*, not recursively
+  local files = scan.scan_dir(dir, { hidden = false, add_dirs = true, depth = 1 })
   local entries = {}
   for _, file in ipairs(files) do
     if file:match "%.md$" or vim.loop.fs_stat(file).type == "directory" then
       local stat = vim.loop.fs_stat(file)
       local created = os.date("%Y-%m-%d %H:%M", stat.ctime.sec)
       local rel = Path:new(file):make_relative(notes_root)
-      local icon, icon_hl = devicons.get_icon(file, nil, { default = true })
+      local icon, _ = devicons.get_icon(file, nil, { default = true })
       table.insert(entries, {
         file = file,
         display = icon .. " " .. rel .. " [" .. created .. "]",
@@ -45,6 +47,31 @@ local function list_entries(dir)
   end
   return entries
 end
+
+--------------------------------------------------
+-- Custom previewer
+--------------------------------------------------
+local folder_previewer = previewers.new_buffer_previewer {
+  define_preview = function(self, entry)
+    if entry.is_dir then
+      local children = scan.scan_dir(entry.file, { hidden = false, depth = 1, add_dirs = true })
+      local lines = { "📂 " .. Path:new(entry.file):make_relative(notes_root), string.rep("=", 40), "" }
+      for _, child in ipairs(children) do
+        local name = Path:new(child):make_relative(entry.file)
+        if vim.loop.fs_stat(child).type == "directory" then
+          table.insert(lines, " " .. name .. "/")
+        else
+          table.insert(lines, " " .. name)
+        end
+      end
+      vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+    else
+      conf.buffer_previewer_maker(entry.value or entry.file, self.state.bufnr, {
+        bufname = self.state.bufname,
+      })
+    end
+  end,
+}
 
 --------------------------------------------------
 -- Picker
@@ -63,6 +90,13 @@ local function open_picker(cwd)
         end,
       },
       sorter = conf.generic_sorter {},
+      previewer = folder_previewer,
+      layout_strategy = "horizontal",
+      layout_config = {
+        preview_width = 0.55,
+        width = 0.9,
+        height = 0.9,
+      },
       attach_mappings = function(prompt_bufnr, map)
         local function refresh()
           actions.close(prompt_bufnr)
