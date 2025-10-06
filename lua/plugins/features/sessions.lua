@@ -3,15 +3,28 @@ return {
   lazy = false,
   keys = {
     -- Will use Telescope if installed or a vim.ui.select picker otherwise
-    { "<leader>sr", "<cmd>SessionSearch<CR>", desc = "Session search" },
-    { "<leader>ss", "<cmd>SessionSave<CR>", desc = "Save session" },
-    { "<leader>sa", "<cmd>SessionToggleAutoSave<CR>", desc = "Toggle autosave" },
+    { "<leader>sr", "<cmd>AutoSession search<CR>", desc = "Session search" },
+    { "<leader>ss", "<cmd>AutoSession save<CR>", desc = "Save session" },
+    { "<leader>sa", "<cmd>AutoSession toggle<CR>", desc = "Toggle autosave" },
   },
 
   ---enables autocomplete for opts
   ---@module "auto-session"
   --[[ ---@type AutoSession.Config ]]
   opts = {
+    cwd_change_handling = true,
+    suppressed_dirs = { "~/" },
+    pre_cwd_changed_cmds = {
+      "tabdo NERDTreeClose", -- Close NERDTree before saving session
+    },
+    pre_save_cmds = {
+      "tabdo NERDTreeClose", -- Close NERDTree before saving session
+    },
+    post_cwd_changed_cmds = {
+      function()
+        require("lualine").refresh() -- example refreshing the lualine status line _after_ the cwd changes
+      end,
+    },
     -- ⚠️ This will only work if Telescope.nvim is installed
     -- The following are already the default values, no need to provide them if these are already the settings you want.
     session_lens = {
