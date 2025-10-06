@@ -29,6 +29,14 @@ require("lazy").setup({
     end,
   },
   { import = "plugins" },
+  { import = "plugins.base" },
+  { import = "plugins.features" },
+  { import = "plugins.formatter" },
+  { import = "plugins.lsp" },
+  { import = "plugins.markdown" },
+  { import = "plugins.rust" },
+  { import = "plugins.typescript" },
+  { import = "plugins.ui" },
 }, lazy_config)
 
 -- load theme
