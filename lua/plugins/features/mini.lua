@@ -3,7 +3,9 @@ return {
   lazy = false,
   version = "*",
   config = function()
-    require("mini.ai").setup()
+    require("mini.ai").setup {
+      n_lines = 1000,
+    }
     require("mini.move").setup {
       mappings = {
         -- Move visual selection in Visual mode. Defaults are Alt (Meta) + hjkl.
