@@ -15,10 +15,10 @@ return {
     cwd_change_handling = true,
     suppressed_dirs = { "~/" },
     pre_cwd_changed_cmds = {
-      "tabdo NERDTreeClose", -- Close NERDTree before saving session
+      "if exists(':NERDTreeClose') | silent! tabdo NERDTreeClose | endif",
     },
     pre_save_cmds = {
-      "tabdo NERDTreeClose", -- Close NERDTree before saving session
+      "if exists(':NERDTreeClose') | silent! tabdo NERDTreeClose | endif",
     },
     post_cwd_changed_cmds = {
       function()
