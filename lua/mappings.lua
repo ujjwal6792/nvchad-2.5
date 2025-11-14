@@ -107,7 +107,7 @@ end, { desc = "Terminal Close term in terminal mode" })
 
 -- custom
 map("n", "<C-d>", "Find Under")
-map("n", "<leader>fp", "<cmd> ProjectMgr<CR>", { desc = "Open Projects" })
+map("n", "<leader>fp", "<cmd> :NeovimProjectDiscover<CR>", { desc = "Open Projects" })
 map("n", "gt", "<cmd> :LazyGit<CR>", { desc = "open lazygit" })
 map("n", "<leader>gf", "<cmd> :LazyGitFilter<CR>", { desc = "lazygit commits" })
 map("n", "gG", "<cmd> :LazyGitCurrentFile<CR>", { desc = "open lazygit for current" })

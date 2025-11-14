@@ -1,14 +1,27 @@
 return {
-  "charludo/projectmgr.nvim",
-  lazy = false, -- important!
-  config = function()
-    require("projectmgr").setup {
-      autogit = {
-        enabled = false,
-        command = "git pull --ff-only > .git/fastforward.log 2>&1",
-      },
-      reopen = false,
-      session = { enabled = false, file = "~/Session.vim" },
-    }
+  "coffebar/neovim-project",
+  opts = {
+    projects = { -- define project roots
+      "~/work/*",
+      "~/.config/nvim",
+      "~/learn/*",
+      "~/projects/*",
+    },
+    picker = {
+      type = "telescope", -- one of "telescope", "fzf-lua", or "snacks"
+    },
+    last_session_on_startup = false,
+    datapath = "~/nvim/store",
+  },
+  init = function()
+    -- enable saving the state of plugins in the session
+    vim.opt.sessionoptions:append "globals" -- save global variables that start with an uppercase letter and contain at least one lowercase letter.
   end,
+  dependencies = {
+    { "nvim-lua/plenary.nvim" },
+    { "nvim-telescope/telescope.nvim", tag = "0.1.4" },
+    { "Shatur/neovim-session-manager" },
+  },
+  lazy = false,
+  priority = 100,
 }
