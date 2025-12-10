@@ -47,13 +47,13 @@ local on_attach_svelte = function(client)
 end
 
 -- Use vim.lsp.config for servers that require custom settings
-vim.lsp.config("ts_ls", {
+vim.lsp.config("tsgo", {
   on_attach = on_attach,
   filetypes = { "javascript", "typescript", "typescriptreact", "javascriptreact", "javascript.jsx", "typescript.tsx" },
   cmd = { "typescript-language-server", "--stdio" },
   capabilities = capabilities,
 })
-vim.lsp.enable "ts_ls"
+vim.lsp.enable "tsgo"
 
 vim.lsp.config("marksman", {
   on_attach = on_attach,
